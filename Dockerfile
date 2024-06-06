@@ -20,7 +20,7 @@ RUN python3 -m venv $POETRY_VENV \
 FROM base as final
 
 # Copy Poetry to app image
-COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
+COPY --from=base ${POETRY_VENV} ${POETRY_VENV}
 
 # Add Poetry to PATH
 ENV PATH="${PATH}:${POETRY_VENV}/bin"
