@@ -12,6 +12,7 @@ pytest = "^8.2.2"
 pytest-cov = "^5.0.0"
 ruff = "^0.4.8"
 pre-commit = "^3.7.1"
+flask-openapi3 = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 
