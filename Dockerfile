@@ -28,4 +28,4 @@ COPY tests ./tests
 
 # Run Application
 EXPOSE 5000
-CMD [ "poetry", "run", "python", "-m", "api.app" ]
+ENTRYPOINT [ "python", "-m", "api.app" ]
