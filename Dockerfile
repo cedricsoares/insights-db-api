@@ -1,40 +1,26 @@
-FROM python:3.10-slim as base
+FROM python:3.10-slim as builder
 
-# https://python-poetry.org/docs#ci-recommendations
-ENV POETRY_VERSION=1.8.3
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VENV=/opt/poetry-venv
+RUN pip install poetry==1.8.3
 
-# Tell Poetry where to place its cache and virtual environment
-ENV POETRY_CACHE_DIR=/opt/.cache
-
-# Create stage for Poetry installation
-FROM base as builder
-
-# Creating a virtual environment just for poetry and install it with pip
-RUN python3 -m venv $POETRY_VENV \
-	&& $POETRY_VENV/bin/pip install -U pip setuptools \
-	&& $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
-
-# Create a new stage from the base python image
-FROM base as final
-
-# Copy Poetry to app image
-COPY --from=base ${POETRY_VENV} ${POETRY_VENV}
-
-# Add Poetry to PATH
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
+ENV POETRY_NO_INTERACTION=1 \
+	POETRY_VIRTUALENVS_IN_PROJECT=1 \
+	POETRY_VIRTUALENVS_CREATE=1 \
+	POETRY_CACHE_DIR=/tmp/poetry_cache
 
 WORKDIR /app
 
-# Copy Dependencies
-COPY poetry.lock pyproject.toml ./
+COPY pyproject.toml poetry.lock ./
+RUN touch README.md
 
-# [OPTIONAL] Validate the project is properly configured
-RUN poetry check
+RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
-# Install Dependencies
-RUN poetry install --no-interaction --no-cache --without dev
+# The runtime image, used to just run the code provided its virtual environment
+FROM python:3.10-slim as runtime
+
+ENV VIRTUAL_ENV=/app/.venv \
+	PATH="/app/.venv/bin:$PATH"
+
+COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 # Copy Application
 COPY api ./api
@@ -42,4 +28,4 @@ COPY tests ./tests
 
 # Run Application
 EXPOSE 5000
-CMD [ "poetry", "run", "python", "-m", "api.app" ]
+ENTRYPOINT [ "python", "-m", "api.app" ]
