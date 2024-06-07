@@ -1,6 +1,9 @@
 name: Lint and test
 
-on: push
+on:
+    push:
+      branches-ignore:
+        - master
 
 jobs:
     dockerfile-linter:
