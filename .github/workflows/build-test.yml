@@ -19,8 +19,19 @@ jobs:
         steps:
         - uses: actions/checkout@v4
         - uses: chartboost/ruff-action@v1
+    sql-linter:
+        needs: dockerfile-linter
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: dsoftwareinc/setup-python-poetry-action@v1
+              with:
+                python-version: 3.10.0
+                poetry-version: 1.8.3
+            - run: |
+                poetry run sqlfluff lint
     test:
-        needs: [dockerfile-linter, python-linter]
+        needs: [dockerfile-linter, python-linter, sql-linter]
         runs-on: ubuntu-20.04
         steps:
             - uses: actions/checkout@v4
