@@ -26,8 +26,7 @@ COPY api/* ./api
 COPY tests/* ./tests
 COPY ./start.sh ./start.sh
 
-RUN chmod +x init_db.py
-RUN chmod +x start.sh
+RUN chmod +x start.sh && chmod +x init_db.py
 
 EXPOSE 5000
 CMD ["bash", "start.sh"]
