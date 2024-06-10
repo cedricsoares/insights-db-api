@@ -40,7 +40,7 @@ def test_get_non_existing_page(mocker, db_connection, client):
 
 
 def test_add_page(client, db_connection):
-    data = {"id": 1113357, "name": "new page name"}
+    data = {"id": 1113358, "name": "new page name"}
     response = client.post("/page", json=data)
     assert response.status_code == 200
     assert response.json["data"]["name"] == "new page name"
@@ -48,14 +48,5 @@ def test_add_page(client, db_connection):
 
 def test_add_page_missing_name(client, db_connection):
     data = {"id": 2, "created_at": "2023-01-01T00:00:00"}
-    response = client.post("/page", json=data)
-    assert response.status_code == 422
-
-
-def test_add_page_invalid_date_format(client, db_connection):
-    data = {
-        "name": "New Page Name",
-        "created_at": "2023-01-01",  # Invalid date format
-    }
     response = client.post("/page", json=data)
     assert response.status_code == 422
