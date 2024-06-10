@@ -5,9 +5,9 @@ Used api to connect to a database in order to in ingest Pages, Videos, Video Ins
 
 ### Context
 
-This api has been designed to suits purpose of recordings informations about data from social networks and video plateforms about pages, videos and video insights.  This projet was developpement to fullfill
+This api has been designed to suits purpose of recording informations about data from social networks and video plateforms about pages, videos and video insights.  This projet was developpement to fullfill
 
-The goal of this projet is mostly to provide a tested API in order to record data in a sqlite database assess a technical test in an hiring processes.
+The goal of this projet is mostly to provide a tested API in order to record data in a sqlite database. I have workd on this project to assess a technical test in an hiring processes.
 
 #### Questions to adresse
 
@@ -164,7 +164,7 @@ Projets is provided with a bunch of tools to facilitate collaboration in a team 
 A final purpose of the project would be to deploy the solution GCP. A good choice to deploy API could Cloud Endpoints.
 For the OLTP might be Cloud SQL.
 
-For OLAP database the best option option is Bigquery.
+For OLAP database the best option option is Bigquery.efforthlesse
 
 To sync both I have two solutions to propose:
 
@@ -174,4 +174,4 @@ On GCP, Google provides a dedicated "near to real time" Charge Data Capture solu
 
 The schema below illustrates a solution to create an analytics database (OLAP) on Google Cloud Platform that is synchronized with the OLTP database.
 
-![OLAP Architecture](olap_architecture.png)
+![alt text](architecture-schema.png)
