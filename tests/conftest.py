@@ -19,7 +19,11 @@ def db_connection():
 
     with open(DB_SCHEMA_PATH) as f:
         cur.executescript(f.read())
-        cur.execute("INSERT INTO pages (id, name) VALUES (?, ?)", (1, "fake_name"))
+        cur.execute("INSERT INTO pages (id, name) VALUES (?, ?)", (11, "fake_name"))
+        cur.execute(
+            "INSERT INTO videos (id, page_id, title) VALUES (?, ?, ?)",
+            (11, 11, "fake_title"),
+        )
         conn.commit()
 
     yield conn
