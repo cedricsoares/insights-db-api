@@ -78,6 +78,34 @@ class VideoAddedResponse(BaseModel):
     data: Optional[dict] = None
 
 
+class VideoInsightPath(BaseModel):
+    id: int = Field(..., description="Video Insight ID")
+
+
+class VideoInsightBody(BaseModel):
+    id: int = Field(..., description="ID of the video insight")
+    video_id: int = Field(
+        ..., description="ID of the video to which the insight belongs"
+    )
+    likes: int = Field(0, description="Number of likes")
+    views: int = Field(0, description="Number of views")
+    created_at: Optional[datetime] = Field(None, description="Insight creation date")
+
+
+class VideoInsightResponse(BaseModel):
+    code: int = Field(0, description="Status Code")
+    message: str = Field("ok", description="Exception Information")
+    data: Optional[VideoInsightBody] = None
+
+
+class VideoInsightAddedResponse(BaseModel):
+    code: int = Field(0, description="Status Code")
+    message: str = Field(
+        "Video insight added successfully!", description="Exception Information"
+    )
+    data: Optional[dict] = None
+
+
 # Routes pour les pages
 @app.post(
     "/page",
@@ -300,6 +328,135 @@ def delete_video(path: VideoPath):
         return {
             "code": 0,
             "message": "Video deleted successfully!",
+            "data": {"id": path.id},
+        }
+
+    except Exception:
+        return InternalError().model_dump(), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+video_insight_tag = Tag(
+    name="video_insight", description="Endpoints related to video insights"
+)
+
+
+@app.post(
+    "/video_insight",
+    tags=[video_insight_tag],
+    summary="Add a new video insight",
+    description="Add a new video insight to the database",
+    operation_id="add_video_insight",
+    responses={200: VideoInsightAddedResponse, 500: InternalError},
+)
+def add_video_insight(body: VideoInsightBody):
+    """
+    Endpoint to add a new video insight.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        cur.execute(
+            "INSERT INTO video_insights (id, video_id, likes, views) VALUES (?, ?, ?, ?)",
+            (body.id, body.video_id, body.likes, body.views),
+        )
+        conn.commit()
+
+        new_video_insight_id = cur.lastrowid
+
+        return {
+            "code": 0,
+            "message": "Video insight added successfully!",
+            "data": {
+                "id": new_video_insight_id,
+                "video_id": body.video_id,
+                "likes": body.likes,
+                "views": body.views,
+            },
+        }
+
+    except Exception:
+        return InternalError().model_dump(), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.get(
+    "/video_insight/<int:id>",
+    tags=[video_insight_tag],
+    summary="Retrieve video insight details",
+    description="Retrieve the details of a video insight using its ID",
+    operation_id="get_video_insight_by_id",
+    responses={
+        200: VideoInsightResponse,
+        404: NotFoundResponse,
+        500: InternalError,
+    },
+)
+def get_video_insight(path: VideoInsightPath):
+    """
+    Endpoint to retrieve video insight details.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        video_insight = cur.execute(
+            "SELECT id, video_id, likes, views, created_at FROM video_insights WHERE id = ?",
+            (path.id,),
+        ).fetchone()
+
+        if not video_insight:
+            return NotFoundResponse().model_dump(), 404
+
+        return {
+            "code": 0,
+            "message": "ok",
+            "data": {
+                "id": path.id,
+                "video_id": video_insight[1],
+                "likes": video_insight[2],
+                "views": video_insight[3],
+                "created_at": video_insight[4],
+            },
+        }
+
+    except Exception:
+        return InternalError().model_dump(), 500
+
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.delete(
+    "/video_insight/<int:id>",
+    tags=[video_insight_tag],
+    summary="Delete a video insight",
+    description="Delete a video insight from the database using its ID",
+    operation_id="delete_video_insight",
+    responses={200: VideoInsightResponse, 404: NotFoundResponse, 500: InternalError},
+)
+def delete_video_insight(path: VideoInsightPath):
+    """
+    Endpoint to delete a video insight.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM video_insights WHERE id = ?", (path.id,))
+        conn.commit()
+
+        if cur.rowcount == 0:
+            return NotFoundResponse().model_dump(), 404
+
+        return {
+            "code": 0,
+            "message": "Video insight deleted successfully!",
             "data": {"id": path.id},
         }
 
