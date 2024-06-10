@@ -6,7 +6,6 @@ from typing import Optional
 
 from api.constants import DB_PATH
 
-API_DB_PATH = DB_PATH
 
 info = Info(
     title="Insights DB API",
@@ -31,23 +30,28 @@ class InternalError(BaseModel):
     message: str = Field("Internal Error!", description="Exception Information")
 
 
-# Request and response models for the page
 class PagePath(BaseModel):
     id: int = Field(..., description="Page ID", example=1)
 
 
 class PageBody(BaseModel):
     id: int = Field(..., description="Page ID", example=1)
-    name: str = Field(..., description="Name of the page", example="fake_name")
-    created_at: Optional[datetime] = Field(
-        None, description="Page creation date", example="2023-01-01T00:00:00"
-    )
+    name: str = Field(..., description="Name of the page")
+    created_at: Optional[datetime] = Field(None, description="Page creation date")
 
 
 class PageResponse(BaseModel):
     code: int = Field(0, description="Status Code")
     message: str = Field("ok", description="Exception Information")
     data: Optional[PageBody] = None
+
+
+class PageAddedResponse(BaseModel):
+    code: int = Field(0, description="Status Code")
+    message: str = Field(
+        "Page added successfully!", description="Exception Information"
+    )
+    data: Optional[dict] = None
 
 
 @app.get(
@@ -66,7 +70,7 @@ def get_page(path: PagePath):
     """
     Endpoint to retrieve page details.
     """
-    conn = sqlite3.connect(API_DB_PATH)
+    conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     try:
         page = cur.execute(
@@ -80,6 +84,43 @@ def get_page(path: PagePath):
             "code": 0,
             "message": "ok",
             "data": {"id": path.id, "name": page[1], "created_at": page[2]},
+        }
+
+    except Exception:
+        return InternalError().model_dump(), 500
+
+    finally:
+        conn.close()
+
+
+@app.post(
+    "/page",
+    tags=[page_tag],
+    summary="Add a new page",
+    description="Add a new page to the database if it does not already exist",
+    operation_id="add_page",
+    responses={200: PageAddedResponse, 500: InternalError},
+)
+def add_page(body: PageBody):
+    """
+    Endpoint to add a new page.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        # Essayez d'insérer une nouvelle page
+        cur.execute(
+            "INSERT INTO pages (id, name) VALUES (?, ?)",
+            (body.id, body.name),
+        )
+        conn.commit()
+
+        new_page_id = cur.lastrowid
+
+        return {
+            "code": 0,
+            "message": "Page added successfully!",
+            "data": {"id": new_page_id, "name": body.name},
         }
 
     except Exception:
