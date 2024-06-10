@@ -1,1 +1,1 @@
-DB_SCHEMA_PATH = "./test/sql/schema.sql"
+DB_SCHEMA_PATH = "./api/sql/schema.sql"

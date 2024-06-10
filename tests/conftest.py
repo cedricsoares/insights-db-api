@@ -1,29 +1,26 @@
 import pytest
 import sqlite3
+
 from api.app import app as flask_app
 from tests.constants import DB_SCHEMA_PATH
 
 
-@pytest.fixture()
-def app():
-    yield flask_app
+@pytest.fixture
+def client():
+    client = flask_app.test_client()
+
+    yield client
 
 
-@pytest.fixture()
-def client(app):
-    return app.test_client()
-
-
-@pytest.fixture()
-def session():
+@pytest.fixture
+def db_connection():
     conn = sqlite3.connect(":memory:")
-    db_session = conn.cursor()
-    yield db_session
-    conn.close()
+    cur = conn.cursor()
 
-
-@pytest.fixture()
-def setup_db(session):
     with open(DB_SCHEMA_PATH) as f:
-        session.executesscripts(f.read)
-        session.connection.commit()
+        cur.executescript(f.read())
+        cur.execute("INSERT INTO pages (id, name) VALUES (?, ?)", (1, "fake_name"))
+        conn.commit()
+
+    yield conn
+    conn.close()
