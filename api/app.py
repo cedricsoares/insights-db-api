@@ -31,11 +31,11 @@ class InternalError(BaseModel):
 
 
 class PagePath(BaseModel):
-    id: int = Field(..., description="Page ID", example=1)
+    id: int = Field(..., description="Page ID")
 
 
 class PageBody(BaseModel):
-    id: int = Field(..., description="Page ID", example=1)
+    id: int = Field(..., description="Page ID")
     name: str = Field(..., description="Name of the page")
     created_at: Optional[datetime] = Field(None, description="Page creation date")
 
