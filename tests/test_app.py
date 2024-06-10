@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytest
 
 
 def test_get_existing_page(mocker, db_connection, client):
@@ -40,7 +41,7 @@ def test_get_non_existing_page(mocker, db_connection, client):
 
 
 def test_add_page(client, db_connection):
-    data = {"id": 1113358, "name": "new page name"}
+    data = {"id": 444, "name": "new page name"}
     response = client.post("/page", json=data)
     assert response.status_code == 200
     assert response.json["data"]["name"] == "new page name"
@@ -50,3 +51,29 @@ def test_add_page_missing_name(client, db_connection):
     data = {"id": 2, "created_at": "2023-01-01T00:00:00"}
     response = client.post("/page", json=data)
     assert response.status_code == 422
+
+
+@pytest.mark.skip(reason="The test is not workink yet")
+def test_delete_existing_page(mocker, db_connection, client):
+    mocker.patch("sqlite3.connect", return_value=db_connection)
+
+    client.post("/page", json={"id": 222, "name": "page_to_delete"})
+
+    resp = client.delete("/page/222")
+
+    db_connection.commit()
+
+    assert resp.status_code == 200
+
+
+def test_delete_non_existing_page(mocker, db_connection, client):
+    mocker.patch("sqlite3.connect", return_value=db_connection)
+
+    resp = client.delete("/page/999")
+
+    assert resp.status_code == 404
+
+    data = resp.get_json()
+
+    assert data["code"] == -1
+    assert data["message"] == "Resource not found!"

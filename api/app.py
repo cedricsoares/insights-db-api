@@ -90,6 +90,7 @@ def get_page(path: PagePath):
         return InternalError().model_dump(), 500
 
     finally:
+        cur.close()
         conn.close()
 
 
@@ -127,6 +128,42 @@ def add_page(body: PageBody):
         return InternalError().model_dump(), 500
 
     finally:
+        cur.close()
+        conn.close()
+
+
+@app.delete(
+    "/page/<int:id>",
+    tags=[page_tag],
+    summary="Delete a page",
+    description="Delete a page from the database using its ID",
+    operation_id="delete_page",
+    responses={200: PageResponse, 404: NotFoundResponse, 500: InternalError},
+)
+def delete_page(path: PagePath):
+    """
+    Endpoint to delete a page.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        cur.execute("DELETE FROM pages WHERE id = ?", (path.id,))
+        conn.commit()
+
+        if cur.rowcount == 0:
+            return NotFoundResponse().model_dump(), 404
+
+        return {
+            "code": 0,
+            "message": "Page deleted successfully!",
+            "data": {"id": path.id},
+        }
+
+    except Exception:
+        return InternalError().model_dump(), 500
+
+    finally:
+        cur.close()
         conn.close()
 
 

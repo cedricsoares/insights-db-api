@@ -1,7 +1,6 @@
 import pytest
 import sqlite3
 
-
 from api.app import app as flask_app
 from tests.constants import DB_SCHEMA_PATH
 
@@ -24,5 +23,4 @@ def db_connection():
         conn.commit()
 
     yield conn
-
     conn.close()
