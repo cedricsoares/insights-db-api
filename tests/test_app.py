@@ -40,7 +40,7 @@ def test_get_non_existing_page(mocker, db_connection, client):
 
 
 def test_add_page(client, db_connection):
-    data = {"id": 1112, "name": "new page name"}
+    data = {"id": 1113, "name": "new page name"}
     response = client.post("/page", json=data)
     assert response.status_code == 200
     assert response.json["data"]["name"] == "new page name"
