@@ -10,7 +10,7 @@ WORKDIR /app
 
 COPY pyproject.toml poetry.lock ./
 
-RUN poetry install --without dev --no-root
+RUN poetry install --no-dev --no-root
 
 FROM python:3.10-slim as runtime
 
