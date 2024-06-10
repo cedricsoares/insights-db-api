@@ -18,6 +18,11 @@ repos:
     - id: ruff
       args: [ --fix ]
     - id: ruff-format
+- repo: https://github.com/sqlfluff/sqlfluff
+  rev: 3.0.7
+  hooks:
+    - id: sqlfluff-lint
+    - id: sqlfluff-fix
 - repo: local
   hooks:
   - id: pytest
