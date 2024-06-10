@@ -23,8 +23,12 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 WORKDIR /app
 
+COPY ./init_db.py ./init_db.py
 COPY api ./api
 COPY tests ./tests
+COPY ./start.sh ./start.sh
+
+RUN chmod +x start.sh
 
 EXPOSE 5000
-ENTRYPOINT [ "python", "-m", "api.app" ]
+CMD ["bash", "start.sh"]
