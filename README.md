@@ -59,6 +59,7 @@ The best way to lauch the api localy would be to use Docker. But it stills have 
 1. Clone the repository from GitHub:
 
     using HTTPS:
+    
         ```bash
         git clone https://github.com/cedricsoares/insights-db-api.git
         ```
@@ -111,7 +112,7 @@ The best way to lauch the api localy would be to use Docker. But it stills have 
 Follow these steps to execute tasks 1 to 4:
     every task can be achived via the apoenapi documentation user interface, a curl query or an API client like Postman.
     Below you are the curl queries to fullfil the tasks:
-    
+
 
 1. **Create a page "OurMedia France":**
 
