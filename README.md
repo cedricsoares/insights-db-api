@@ -57,12 +57,15 @@ Ensure you have the following installed:
 The best way to lauch the api localy would be to use Docker. But it stills have some database inizialisation issue with the Dockerfile.
 
 1. Clone the repository from GitHub:
+
     using HTTPS:
+    
         ```bash
         git clone https://github.com/cedricsoares/insights-db-api.git
         ```
 
     or using ssh
+
      ```bash
         git clone git@github.com:cedricsoares/insights-db-api.git
     ```
@@ -76,9 +79,10 @@ The best way to lauch the api localy would be to use Docker. But it stills have 
     Poetry is a powerfull environement / package manager that lowers risks on dependencies mnagement and multi envs.
 
     To insall poetry use the bash command (works with MacOS, Linux, Windows):
-    ``bash
-    curl -sSL https://install.python-poetry.org | python3 -
-    ```
+
+        ``bash
+        curl -sSL https://install.python-poetry.org | python3 -
+        ```
 
 
 3. Install the required dependencies:
@@ -109,45 +113,53 @@ Follow these steps to execute tasks 1 to 4:
     every task can be achived via the apoenapi documentation user interface, a curl query or an API client like Postman.
     Below you are the curl queries to fullfil the tasks:
 
+
 1. **Create a page "OurMedia France":**
-    ```bash
+
+    ```bash    
     curl -X POST http://127.0.0.1:5000/page -H "Content-Type: application/json" -d '{"id": 1, "name": "OurMedia France"}'
     ```
 
 2. **Create videos "A" and "B" for the page "Brut France":**
+
     First of all Brut France is not yet stored in the pages table. So to ensure foreign key constraints we need to create à new page for Brut France
 
-    ```bash
-    curl -X POST http://127.0.0.1:5000/page -H "Content-Type: application/json" -d '{"id": 2, "name": "Brut France"}'
+        ```bash
+        curl -X POST http://127.0.0.1:5000/page -H "Content-Type: application/json" -d '{"id": 2, "name": "Brut France"}'
+        ```
 
     Then, you can add the videos
-    ```
-    ```bash
-    curl -X POST http://127.0.0.1:5000/video -H "Content-Type: application/json" -d '{"id": 1, "page_id": 2, "title": "Video A"}'
-    curl -X POST http://127.0.0.1:5000/video -H "Content-Type: application/json" -d '{"id": 2, "page_id": 2, "title": "Video B"}'
-    ```
+  
+        ```bash
+        curl -X POST http://127.0.0.1:5000/video -H "Content-Type: application/json" -d '{"id": 1, "page_id": 2, "title": "Video A"}'
+        curl -X POST http://127.0.0.1:5000/video -H "Content-Type: application/json" -d '{"id": 2, "page_id": 2, "title": "Video B"}'
+        ```
 
 3. **Create insights for videos "A" and "B":**
-    ```bash
-    curl -X POST http://127.0.0.1:5000/video_insight -H "Content-Type: application/json" -d '{"id": 1, "video_id": 1, "likes": 100, "views": 1000}'
-    curl -X POST http://127.0.0.1:5000/video_insight -H "Content-Type: application/json" -d '{"id": 2, "video_id": 2, "likes": 50, "views": 500}'
-    ```
+
+        ```bash
+        curl -X POST http://127.0.0.1:5000/video_insight -H "Content-Type: application/json" -d '{"id": 1, "video_id": 1, "likes": 100, "views": 1000}'
+        curl -X POST http://127.0.0.1:5000/video_insight -H "Content-Type: application/json" -d '{"id": 2, "video_id": 2, "likes": 50, "views": 500}'
+        ```
 
 4. **Delete video "B":**
-    ```bash
-    curl -X DELETE http://127.0.0.1:5000/video/2
-    ```
+
+        ```bash
+        curl -X DELETE http://127.0.0.1:5000/video/2
+        ```
 
 ### Testing
 
 Run the tests using pytest:
 
 1. Install pytest if you haven't already:
+
     ```bash
     poetry add --dev pytest
     ```
 
 2. Run the tests:
+
     ```bash
     poetry run pytest test_app.py
     ```
@@ -155,6 +167,7 @@ Run the tests using pytest:
 ### Remarks
 
 Projets is provided with a bunch of tools to facilitate collaboration in a team context:
+
 - On Github two CI worflows are implemented: One to run linters on Dockerfile, Python and SQL and to run unit tests, the second to push Docker builder image on DockerHub.
 - For local purpose a pre-commit configuration YAML file is provides to run linters and unit tests before each commit
 - Project was developped in a vscode dev container. Config files might also be commited on Github
